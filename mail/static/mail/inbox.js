@@ -5,10 +5,41 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
   document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
   document.querySelector('#compose').addEventListener('click', compose_email);
+  document.querySelector('#compose-submit').addEventListener('click', () => {
+    event.preventDefault(); 
+    send_email(); 
+  })
 
   // By default, load the inbox
   load_mailbox('inbox');
 });
+
+function send_email() {
+  // Obtain results from the email compose form
+  let recipients = document.querySelector('#compose-recipients').value;
+  let subject = document.querySelector('#compose-subject').value;
+  let body = document.querySelector('#compose-body').value; 
+
+  // Post results to server
+  fetch('/emails', {
+    method: 'POST',
+    body: JSON.stringify({
+        recipients: recipients,
+        subject: subject,
+        body: body
+    })
+  })
+  .then(response => response.json())
+  .then(result => {
+      // Print result
+      console.log(result);
+      if (!result.error) {
+        load_mailbox('sent'); 
+      }
+  });
+
+}
+
 
 function compose_email() {
 
