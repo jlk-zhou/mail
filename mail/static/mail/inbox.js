@@ -60,5 +60,42 @@ function load_mailbox(mailbox) {
   document.querySelector('#compose-view').style.display = 'none';
 
   // Show the mailbox name
-  document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
+  let mailboxName = mailbox.charAt(0).toUpperCase() + mailbox.slice(1)
+  document.querySelector('#emails-view').innerHTML = `<h3>${mailboxName}</h3>`;
+
+  // Obtain emails from corresponding mailboxes
+  fetch(`/emails/${mailbox}`)
+  .then(response => response.json())
+  .then(email => {
+      // Print email in console
+      console.log(email);
+
+      // Load emails
+      // Tell user that the mailbox is empty if so
+      if (email.length === 0) {
+        const element = document.createElement('div'); 
+        element.innerHTML = `<p> Your \"${mailboxName}\" mailbox is empty. </p>`;
+        document.querySelector('#emails-view').append(element)
+      }
+
+      // If mailbox is non-empty, load the emails
+      else {
+        for (let i = 0; i < email.length; i++) {
+          const element = document.createElement('div');
+          let content = `
+          <h5> From: ${email[i].sender} </h5>
+          <p> Subject: ${email[i].subject} </p>
+          <p> On: ${email[i].timestamp} </p>
+          <hr>`; 
+          element.innerHTML += `${content}`;
+          document.querySelector('#emails-view').append(element);
+        }
+      }
+      
+      // Make each individual email clickable
+      // element.addEventListener('click', function() {
+      //     console.log('This element has been clicked!')
+      // });
+      // document.querySelector('#emails-view').append(element);
+  });
 }
