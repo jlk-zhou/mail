@@ -88,14 +88,15 @@ function load_mailbox(mailbox) {
           <p> On: ${email[i].timestamp} </p>
           <hr>`; 
           element.innerHTML += `${content}`;
+          // Make each individual email clickable
+          element.addEventListener('click', function() {
+              console.log('This element has been clicked!')
+          });
           document.querySelector('#emails-view').append(element);
         }
       }
       
-      // Make each individual email clickable
-      // element.addEventListener('click', function() {
-      //     console.log('This element has been clicked!')
-      // });
+      
       // document.querySelector('#emails-view').append(element);
   });
 }
