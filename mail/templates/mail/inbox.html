@@ -11,9 +11,11 @@
     <a class="btn btn-sm btn-outline-primary" href="{% url 'logout' %}">Log Out</a>
     <hr>
 
+    {% comment %} The mailboxes views {% endcomment %}
     <div id="emails-view">
     </div>
 
+    {% comment %} The compose new email view {% endcomment %}
     <div id="compose-view">
         <h3>New Email</h3>
         <form id="compose-form">
@@ -30,6 +32,13 @@
             <input id="compose-submit" type="submit" class="btn btn-primary"/>
         </form>
     </div>
+
+    {% comment %} The Read Email details view {% endcomment %}
+    <div id="read-view">
+        <h3>Read Email</h3>
+        <div id="opened-email"></div>
+    </div>
+
 {% endblock %}
 
 {% block script %}

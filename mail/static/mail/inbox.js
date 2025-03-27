@@ -46,11 +46,13 @@ function compose_email() {
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
+  document.querySelector('#read-view').style.display = 'none';
 
   // Clear out composition fields
   document.querySelector('#compose-recipients').value = '';
   document.querySelector('#compose-subject').value = '';
   document.querySelector('#compose-body').value = '';
+
 }
 
 function load_mailbox(mailbox) {
@@ -58,6 +60,7 @@ function load_mailbox(mailbox) {
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#read-view').style.display = 'none';
 
   // Show the mailbox name
   let mailboxName = mailbox.charAt(0).toUpperCase() + mailbox.slice(1)
@@ -88,15 +91,62 @@ function load_mailbox(mailbox) {
           <p> On: ${email[i].timestamp} </p>
           <hr>`; 
           element.innerHTML += `${content}`;
-          // Make each individual email clickable
-          element.addEventListener('click', function() {
-              console.log('This element has been clicked!')
-          });
+
+          // Clicking the emails should open them for user to read
+          element.addEventListener('click', () => read_email(email[i].id)); 
+
+          // Mark read emails with a grey background
+          // This doesn't apply to the emails in the 'sent' inbox since
+          // you must have sent what you read! 
+          if (mailbox != 'sent') {
+            if (email[i].read === true) {
+              element.style.backgroundColor = '#E4E4E4'; 
+            } else {
+              element.style.backgroundColor = 'white'; 
+            }
+          }
+          
+          // Add Bootstrap CSS to the div
+          element.classList.add('rounded', 'm-3', 'px-2', 'pt-2'); 
+          
+          // Attach this email div to the view
           document.querySelector('#emails-view').append(element);
         }
       }
-      
-      
-      // document.querySelector('#emails-view').append(element);
-  });
+    });
+
+}
+
+function read_email(id) {
+  // Hide all other pages, which could only be the email view
+  // since only through here you can open an email and read! 
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#read-view').style.display = 'block';
+
+  // Obtain the actual content of the email
+  fetch(`/emails/${id}`)
+  .then(response => response.json())
+  .then(email => {
+      // Print email
+      console.log(email);
+
+      // Render the email in the new page
+      let content = `
+      <h5> SUB: ${email.subject} </h5>
+      <p> From: ${email.sender} </p>
+      <p> To: ${email.recipients} </p>
+      <p> On: ${email.timestamp} </p>
+      <hr>
+      <p> ${email.body} </p>
+      `; 
+      document.querySelector('#opened-email').innerHTML = `${content}`
+  });; 
+
+  // Mark the email as read
+  fetch(`/emails/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+        read: true
+    })
+  })
 }
