@@ -46,7 +46,7 @@ function compose_email() {
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
-  document.querySelector('#read-view').style.display = 'none';
+  document.querySelector('#read -view').style.display = 'none';
 
   // Clear out composition fields
   document.querySelector('#compose-recipients').value = '';
@@ -139,8 +139,33 @@ function read_email(id) {
       <hr>
       <p> ${email.body} </p>
       `; 
-      document.querySelector('#opened-email').innerHTML = `${content}`
-  });; 
+      document.querySelector('#opened-email').innerHTML = `${content}`; 
+
+      // Implement archive button function
+      if (email.archived) {
+        document.querySelector('#archive').innerHTML = 'Unarchive'; 
+        document.querySelector('#archive').addEventListener('click', () => {
+          fetch(`/emails/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                archived: false
+            })
+          }); 
+          document.querySelector('#archive').innerHTML = 'Archive'; 
+        }); 
+      } else {
+        document.querySelector('#archive').innerHTML = 'Archive'; 
+        document.querySelector('#archive').addEventListener('click', () => {
+          fetch(`/emails/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                archived: true
+            })
+          })
+          document.querySelector('#archive').innerHTML = 'Unarchive'; 
+        }); 
+      }; 
+  });
 
   // Mark the email as read
   fetch(`/emails/${id}`, {
@@ -148,5 +173,5 @@ function read_email(id) {
     body: JSON.stringify({
         read: true
     })
-  })
+  })  
 }
